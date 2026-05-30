@@ -27,34 +27,19 @@ document.querySelectorAll('.tab').forEach(tab => {
 // GainNode = controls the volume
 // ============================================================
 
-function makeBeep(freq = 880, dur = 0.35) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();   // creates the sound wave
-    const gain = ctx.createGain();        // controls volume
+const alarmSound = new Audio('alarm.mp3');
+alarmSound.loop = false;
 
-    osc.connect(gain);                    // connect oscillator → gain
-    gain.connect(ctx.destination);        // connect gain → speakers
-
-    osc.type = 'sine';                    // sine = smooth beep tone
-    osc.frequency.value = freq;           // pitch (Hz), 880 = high A note
-
-    // Start at volume 0.3 then fade to near-zero at the end
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + dur);
-  } catch (e) {
-    // If browser blocks audio, silently fail
-  }
+function makeBeep() {
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(e => {});
 }
 
-// Rings repeatedly every 500ms using setInterval
-// Returns the interval ID so we can stop it later
 function startRinging() {
-  makeBeep();
-  return setInterval(() => makeBeep(), 500);
+  alarmSound.loop = true;
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(e => {});
+  return null;
 }
 
 
@@ -253,6 +238,8 @@ function tmStartRing() {
 }
 
 function tmStopRing() {
+   alarmSound.pause();        // ← add this
+  alarmSound.currentTime = 0; // ← add this
   clearInterval(tmRingInterval);
   tmRingInterval = null;
   document.getElementById('tm-banner').classList.remove('show');
@@ -368,6 +355,8 @@ function alStartRing(label) {
 }
 
 function alStopRing() {
+   alarmSound.pause();        // ← add this
+  alarmSound.currentTime = 0; // ← add this
   clearInterval(alRingInterval);
   alRingInterval = null;
   document.getElementById('al-banner').classList.remove('show');
