@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Enterprise Core v4.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #06090e;         /* Pure Midnight Black */
+            --bg-sidebar: #0b0f17;      /* Clean Matte Sidebar */
+            --card-bg: #121824;         /* Premium Card Fill */
+            --border-glow: #1f293d;     /* Dark Steel Frame */
+            
+            --neon-blue: #00d2ff;       /* Cyber System Blue */
+            --neon-red: #ff3366;        /* Reactive Command Red */
+            --text-pure: #ffffff;
+            --text-muted: #7a889b;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-pure);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- STATIC NAVIGATION PANEL --- */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-glow);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0; top: 0; z-index: 10;
+        }
+        .brand {
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+        .brand-logo {
+            width: 12px; height: 12px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-red));
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        .nav-links { list-style: none; padding: 25px 15px; }
+        .nav-item a {
+            display: flex; align-items: center; gap: 15px; color: var(--text-muted);
+            text-decoration: none; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .nav-item.active a, .nav-item a:hover { color: var(--neon-blue); background: rgba(0, 210, 255, 0.04); }
+
+        /* --- CONTROL ENVIRONMENT LAYER --- */
+        main {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 40px;
+            max-width: 1500px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* --- LIVE HEADER LOOKUP UTILITY --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+        .search-container {
+            position: relative;
+            width: 480px;
+        }
+        .search-container i {
+            position: absolute;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-blue);
+        }
+        .main-search-input {
+            width: 100%;
+            background-color: var(--bg-sidebar);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            padding: 12px 16px 12px 48px;
+            color: var(--text-pure);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        .main-search-input:focus {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.12);
+        }
+
+        /* --- SECTION GRID SEGMENTS --- */
+        .category-section {
+            margin-bottom: 35px;
+            transition: opacity 0.2s ease;
+        }
+        .category-header-line {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-glow) 0%, rgba(31, 41, 61, 0.1) 100%);
+            margin-top: 25px;
+        }
+
+        .grid-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        /* --- HIGH TECH APPLICATION TILES --- */
+        .app-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none; color: inherit;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-card::before {
+            content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 2px;
+            background: var(--neon-red); transition: width 0.25s ease;
+        }
+        .card-top { margin-bottom: 14px; }
+        .icon-box {
+            font-size: 1.5rem; color: var(--neon-blue);
+            width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 210, 255, 0.01); border-radius: 8px; border: 1px solid rgba(0, 210, 255, 0.08);
+            transition: all 0.25s ease;
+        }
+        .app-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 3px; letter-spacing: 0.2px; }
+        .app-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; }
+
+        /* Animations & Highlighting Matrix Effects */
+        .app-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 51, 102, 0.35);
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.06);
+        }
+        .app-card:hover::before { width: 100%; }
+        .app-card:hover .icon-box { color: var(--neon-red); border-color: rgba(255, 51, 102, 0.25); background: rgba(255, 51, 102, 0.04); }
+
+        /* Dynamic Missing Screen Alert box */
+        .no-results {
+            display: none; text-align: center; color: var(--text-muted); padding: 50px; font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="brand">
+            <div class="brand-logo"></div>
+            <span>NEXUS MAIN OPERATIVE</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active"><a href="#"><i class="fa-solid fa-layer-group"></i> Ecosystem Base</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-chart-line"></i> Global Metrics</a></li>
+            <li class="nav-item"><a href="#"><i class="fa-solid fa-shield-halved"></i> Security Guard</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <header>
+            <div>
+                <h1 style="font-size: 1.4rem; font-weight: 600; letter-spacing: 0.4px;">Ecosystem Base Modules</h1>
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="main-search-input" id="nodeFinder" placeholder="Search system nodes (e.g., 'vault', 'crm', 'pipelines')..." autocomplete="off">
+            </div>
+        </header>
+
+        <div class="no-results" id="emptyNotice">
+            <i class="fa-solid fa-ban" style="color: var(--neon-red); font-size: 1.4rem; margin-bottom: 12px;"></i>
+            <p>Target terminal node not discovered in active clusters.</p>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header-line"><i class="fa-solid fa-brain" style="font-size: 0.75rem;"></i> System Intelligence & Knowledge</div>
+            <div class="grid-matrix">
+                <div class="app-card" data-search="ai engine intelligence neural generative copilot auto text">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-brain"></i></div></div>
+                    <div class="app-title">AI Engine</div>
+                    <div class="app-desc">Neural data optimization arrays.</div>
+                </div>
+                <div class="app-card" data-search="knowledge central doc system wiki instructions manuals notes base">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-book-bookmark"></i></div></div>
+                    <div class="app-title">Knowledge Nexus</div>
+                    <div class="app-desc">Unified global technical logs repository.</div>
+                </div>
+                <div class="app-card" data-search="documents storage files data secure vault cloud assets pdf txt">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-folder-open"></i></div></div>
+                    <div class="app-title">Secure Documents</div>
+                    <div class="app-desc">Encrypted cloud structured text vault.</div>
+                </div>
+                <div class="app-card" data-search="telemetry metrics analytics dashboard charts global monitoring master stats">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-gauge"></i></div></div>
+                    <div class="app-title">Master Telemetry</div>
+                    <div class="app-desc">Realtime hardware and operations overview.</div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header-line"><i class="fa-solid fa-code" style="font-size: 0.75rem;"></i> Architecture & Code Pipelines</div>
+            <div class="grid-matrix">
+                <div class="app-card" data-search="automations triggers workflows processes low code chains hooks cron">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-diagram-project"></i></div></div>
+                    <div class="app-title">Automations Engine</div>
+                    <div class="app-desc">Low-code visual sequence architecture tools.</div>
+                </div>
+                <div class="app-card" data-search="ci cd deployments builds actions code branches code repository pipeline pipelines git">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-code-branch"></i></div></div>
+                    <div class="app-title">CI/CD Deployments</div>
+                    <div class="app-desc">Automated system build and cluster routing.</div>
+                </div>
+                <div class="app-card" data-search="terminal command shell ssh execution api runner scripts scripts">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-terminal"></i></div></div>
+                    <div class="app-title">Cloud Terminal</div>
+                    <div class="app-desc">Interactive system server script execution.</div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header-line"><i class="fa-solid fa-wallet" style="font-size: 0.75rem;"></i> Revenue & Growth Infrastructure</div>
+            <div class="grid-matrix">
+                <div class="app-card" data-search="accounting cash finance ledger invoices balances taxes tax ledger">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-calculator"></i></div></div>
+                    <div class="app-title">Accounting</div>
+                    <div class="app-desc">Corporate tracking ledgers and balance books.</div>
+                </div>
+                <div class="app-card" data-search="crm sales leads pipeline opportunities deals acquisition client management">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-handshake"></i></div></div>
+                    <div class="app-title">CRM System</div>
+                    <div class="app-desc">Automated user acquisition tracking routes.</div>
+                </div>
+                <div class="app-card" data-search="sales deals orders transactions storefront invoice store retail checks">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-chart-line"></i></div></div>
+                    <div class="app-title">Sales Hub</div>
+                    <div class="app-desc">Revenue funnel conversions and generation.</div>
+                </div>
+                <div class="app-card" data-search="subscriptions recurring billing contracts saas software license plans renewal">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-repeat"></i></div></div>
+                    <div class="app-title">Subscriptions</div>
+                    <div class="app-desc">Continuous recurring user billing agreements.</div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header-line"><i class="fa-solid fa-boxes-stacked" style="font-size: 0.75rem;"></i> Logistics & Fulfillment Networks</div>
+            <div class="grid-matrix">
+                <div class="app-card" data-search="inventory warehouse stock fulfillment logistics distribution supply items tracking">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-boxes-stacked"></i></div></div>
+                    <div class="app-title">Inventory Control</div>
+                    <div class="app-desc">Warehouse material quantities analytics.</div>
+                </div>
+                <div class="app-card" data-search="manufacturing production assembly lines factory plants blueprints build matrix mfg">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-industry"></i></div></div>
+                    <div class="app-title">Manufacturing</div>
+                    <div class="app-desc">Material compilation assembly lines.</div>
+                </div>
+                <div class="app-card" data-search="ecommerce catalog web shop store digital items cart pricing items online">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-cart-shopping"></i></div></div>
+                    <div class="app-title">eCommerce Hub</div>
+                    <div class="app-desc">Public digital retail catalog deployment.</div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header-line"><i class="fa-solid fa-users" style="font-size: 0.75rem;"></i> Human Resources & Internal Comms</div>
+            <div class="grid-matrix">
+                <div class="app-card" data-search="hr employees team directory payroll organization talent staff hiring">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-users"></i></div></div>
+                    <div class="app-title">HR Control</div>
+                    <div class="app-desc">Internal staff structural directory matrices.</div>
+                </div>
+                <div class="app-card" data-search="project tasks boards sprints kanban backlog assignments agile milestones">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-list-check"></i></div></div>
+                    <div class="app-title">Project Node</div>
+                    <div class="app-desc">Sprint target trackers and kanban pipelines.</div>
+                </div>
+                <div class="app-card" data-search="secure comms encrypted channels chat bridge messages log communication gateway team">
+                    <div class="card-top"><div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div></div>
+                    <div class="app-title">Secure Comms</div>
+                    <div class="app-desc">Encrypted internal team workspace communication links.</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const searchInput = document.getElementById('nodeFinder');
+        const cards = document.querySelectorAll('.app-card');
+        const sections = document.querySelectorAll('.category-section');
+        const emptyNotice = document.getElementById('emptyNotice');
+
+        searchInput.addEventListener('input', (e) => {
+            const value = e.target.value.toLowerCase().trim();
+            let totalFound = 0;
+
+            sections.forEach(section => {
+                let matchesInSection = 0;
+                const sectionCards = section.querySelectorAll('.app-card');
+
+                sectionCards.forEach(card => {
+                    const searchKeywords = card.getAttribute('data-search');
+                    const cardTitle = card.querySelector('.app-title').innerText.toLowerCase();
+
+                    // Instantly matches input string index with meta-tags keywords
+                    if (cardTitle.includes(value) || searchKeywords.includes(value)) {
+                        card.style.display = 'flex';
+                        matchesInSection++;
+                        totalFound++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Cleanly toggle entire row + lines layout visibility states
+                if (matchesInSection > 0) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            // Trigger fallback graphic layout if searches match absolutely zero tags
+            if (totalFound === 0) {
+                emptyNotice.style.display = 'block';
+            } else {
+                emptyNotice.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
