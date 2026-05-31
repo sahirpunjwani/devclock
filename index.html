@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="logo" type="image/png" href="favicon.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clockify</title>
@@ -63,17 +63,17 @@
     <section class="section" id="timer">
       <div class="time-inputs" id="tm-inputs">
         <div class="input-group">
-          <input type="number" id="tm-h" min="0" max="99" value="0" placeholder="00">
+          <input type="number" id="tm-h" min="0" max="23" value="00" placeholder="00">
           <label>h</label>
         </div>
         <span class="colon">:</span>
         <div class="input-group">
-          <input type="number" id="tm-m" min="0" max="59" value="5" placeholder="00">
+          <input type="number" id="tm-m" min="0" max="59" value="05" placeholder="00">
           <label>m</label>
         </div>
         <span class="colon">:</span>
         <div class="input-group">
-          <input type="number" id="tm-s" min="0" max="59" value="0" placeholder="00">
+          <input type="number" id="tm-s" min="0" max="59" value="00" placeholder="00">
           <label>s</label>
         </div>
       </div>
@@ -116,6 +116,17 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
+      <div class="days-picker">
+        <button class="day-btn" data-day="0">Su</button>
+        <button class="day-btn" data-day="1">Mo</button>
+        <button class="day-btn" data-day="2">Tu</button>
+        <button class="day-btn" data-day="3">We</button>
+        <button class="day-btn" data-day="4">Th</button>
+        <button class="day-btn" data-day="5">Fr</button>
+        <button class="day-btn" data-day="6">Sa</button>
+      </div>
+      <p class="days-hint">no days selected = rings every day</p>
+      <p class="error-msg" id="al-error"></p>
       <div class="alarm-list" id="al-list"></div>
       <p class="notif-hint" id="notif-hint"></p>
     </section>
